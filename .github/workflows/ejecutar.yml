@@ -61,6 +61,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add src/carga_datos/datos src/carga_datos/reportes src/carga_datos/EA1_Carga_Datos.ipynb
+          git diff --staged --quiet || (git commit -m "auto: guardar datos, reportes y notebook ejecutado" && git push)
+         
 
           if git diff --cached --quiet; then
             echo "No se generaron cambios."

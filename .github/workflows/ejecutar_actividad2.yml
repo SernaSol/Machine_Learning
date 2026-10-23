@@ -1,0 +1,85 @@
+
+name: Actividad 2 - Regresion y Clasificacion
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ejecutar-actividad2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install \
+            pandas numpy scikit-learn matplotlib \
+            datasets huggingface_hub pyarrow \
+            nbconvert ipykernel
+
+      - name: Configurar kernel Jupyter
+        run: |
+          python -m ipykernel install --user --name python3
+
+      - name: Ejecutar modelos de la Actividad 2
+        working-directory: src/carga_datos
+        run: |
+          python - <<'PY'
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          notebooks = list(Path(".").glob("EA2_*.ipynb"))
+
+          if len(notebooks) != 1:
+              raise RuntimeError(
+                  f"Se esperaba un notebook EA2 y se encontraron: {notebooks}"
+              )
+
+          subprocess.run(
+              [
+                  sys.executable,
+                  "-m", "jupyter", "nbconvert",
+                  "--to", "notebook",
+                  "--execute",
+                  "--ExecutePreprocessor.timeout=1800",
+                  "--ExecutePreprocessor.kernel_name=python3",
+                  "--output", "EA2_ejecutado.ipynb",
+                  str(notebooks[0]),
+              ],
+              check=True
+          )
+          PY
+
+      - name: Verificar resumen automatico
+        run: |
+          test -s src/carga_datos/resumen_modelos_actividad2.txt
+          echo "Resumen generado correctamente"
+
+      - name: Publicar resumen y evidencias
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-actividad2
+          path: |
+            src/carga_datos/resumen_modelos_actividad2.txt
+            src/carga_datos/EA2_ejecutado.ipynb
+          if-no-files-found: error
+          retention-days: 30

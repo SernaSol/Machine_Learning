@@ -1,7 +1,7 @@
 ACTIVIDAD 2 - MACHINE LEARNING
 RESUMEN AUTOMÁTICO DE REGRESIÓN Y CLASIFICACIÓN
 
-Fecha de ejecución: 2026-10-23 05:02:35
+Fecha de ejecución: 2026-10-23 05:08:05
 
 ==================================================
 1. INFORMACIÓN DEL DATASET

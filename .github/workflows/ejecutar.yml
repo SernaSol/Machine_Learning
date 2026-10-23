@@ -1,3 +1,4 @@
+
 name: Ejecutar
 
 on:
@@ -20,6 +21,7 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
       - name: Configurar Python
@@ -34,22 +36,23 @@ jobs:
 
       - name: Instalar dependencias
         run: |
-          source .venv/bin/activate
           .venv/bin/python -m pip install --upgrade pip
           .venv/bin/python -m pip install -r requirements.txt
           .venv/bin/python -m pip install pyarrow openpyxl
 
       - name: Limpiar datos y reportes generados
         run: |
-          mkdir -p src/carga_datos/datos src/carga_datos/reportes
-          find src/carga_datos/datos -mindepth 1 -delete
-          find src/carga_datos/reportes -mindepth 1 -delete
+          mkdir -p src/carga_datos/datos
+          mkdir -p src/carga_datos/reportes
+
+          rm -f src/carga_datos/datos/heart_failure.csv
+          find src/carga_datos/reportes \
+            -mindepth 1 -type f -delete
 
       - name: Ejecutar EA1_Carga_Datos.ipynb
         working-directory: src/carga_datos
         run: |
-          source ../../.venv/bin/activate
-          jupyter nbconvert \
+          ../../.venv/bin/python -m jupyter nbconvert \
             --to notebook \
             --execute \
             --inplace \
@@ -59,14 +62,31 @@ jobs:
       - name: Confirmar cambios generados
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/carga_datos/datos src/carga_datos/reportes src/carga_datos/EA1_Carga_Datos.ipynb
-        
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            src/carga_datos/datos \
+            src/carga_datos/reportes \
+            src/carga_datos/EA1_Carga_Datos.ipynb
 
           if git diff --cached --quiet; then
             echo "No se generaron cambios."
             exit 0
           fi
 
-          git commit -m "chore: actualizar resultados de actividad [skip ci]"
+          git commit -m \
+            "chore: actualizar resultados de actividad [skip ci]"
+
+          # Apartar cambios no incluidos en el commit
+          git stash push --include-untracked \
+            -m "Cambios temporales Actividad 1"
+
+          # Integrar commits nuevos del repositorio
+          git fetch origin main
+          git rebase origin/main
+
+          # Publicar los resultados de Actividad 1
           git push origin HEAD:main
+
+          echo "Resultados de Actividad 1 publicados correctamente"

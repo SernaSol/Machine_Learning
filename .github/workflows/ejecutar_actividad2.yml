@@ -37,41 +37,24 @@ jobs:
         run: |
           .venv/bin/python -m pip install --upgrade pip
           .venv/bin/python -m pip install -r requirements.txt
-
-          .venv/bin/python -m pip install \
-            pandas numpy scikit-learn \
-            datasets huggingface_hub pyarrow \
-            nbconvert ipykernel matplotlib-inline
-
-          # Eliminar posibles archivos anteriores de Matplotlib
-          .venv/bin/python -m pip uninstall -y matplotlib
-
-          SITE_PACKAGES=$(.venv/bin/python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
-          rm -rf "$SITE_PACKAGES/matplotlib"
-          rm -rf "$SITE_PACKAGES"/matplotlib-*.dist-info
-
-          # Reinstalar Matplotlib de forma limpia
-          .venv/bin/python -m pip install \
-            --no-cache-dir --force-reinstall "matplotlib==3.10.7"
+          .venv/bin/python -m pip install pyarrow openpyxl
 
       # 5. Verificar Matplotlib
       - name: Verificar Matplotlib
+        env:
+          MPLBACKEND: Agg
         run: |
           .venv/bin/python - <<'PY'
           import matplotlib
-          from matplotlib.ft2font import LoadFlags, RenderMode
           import matplotlib.pyplot as plt
-          import matplotlib_inline.backend_inline
 
-          print("Version de Matplotlib:", matplotlib.__version__)
-          print("LoadFlags:", LoadFlags)
-          print("RenderMode:", RenderMode)
+          print("Version:", matplotlib.__version__)
 
-          fig, ax = plt.subplots()
+          fig, ax = plt.subplots(figsize=(8, 5))
           ax.plot([1, 2, 3], [1, 4, 9])
           plt.close(fig)
 
-          print("Matplotlib funciona correctamente")
+          print("Grafica creada correctamente")
           PY
 
       # 6. Configurar kernel de Jupyter

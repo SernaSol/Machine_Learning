@@ -1,5 +1,4 @@
-
-name: Actividad 2 - Regresion y Clasificacion
+name: Ejecutar Actividad 2
 
 on:
   push:
@@ -16,9 +15,11 @@ jobs:
     timeout-minutes: 45
 
     steps:
+      # 1. Descargar el repositorio
       - name: Descargar repositorio
         uses: actions/checkout@v4
 
+      # 2. Configurar Python
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
@@ -26,23 +27,52 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
 
+      # 3. Crear entorno virtual
+      - name: Crear entorno virtual
+        run: python -m venv .venv
+
+      # 4. Instalar dependencias
       - name: Instalar dependencias
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-          python -m pip install \
-            pandas numpy scikit-learn matplotlib \
-            datasets huggingface_hub pyarrow \
-            nbconvert ipykernel
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -r requirements.txt
 
+          .venv/bin/python -m pip install \
+            pandas numpy scikit-learn \
+            datasets huggingface_hub pyarrow \
+            nbconvert ipykernel matplotlib-inline
+
+          .venv/bin/python -m pip uninstall -y matplotlib
+          .venv/bin/python -m pip install \
+            --no-cache-dir "matplotlib==3.10.7"
+
+      # 5. Verificar Matplotlib
+      - name: Verificar Matplotlib
+        run: |
+          .venv/bin/python -c "import matplotlib; print('Matplotlib:', matplotlib.__version__)"
+          .venv/bin/python -c "from matplotlib.ft2font import LoadFlags; print('LoadFlags disponible')"
+          .venv/bin/python -c "import matplotlib_inline.backend_inline; print('Backend inline correcto')"
+
+      # 6. Configurar kernel Jupyter
       - name: Configurar kernel Jupyter
         run: |
-          python -m ipykernel install --user --name python3
+          .venv/bin/python -m ipykernel install \
+            --user \
+            --name actividad2 \
+            --display-name "Python Actividad 2"
 
+      # 7. Limpiar resumen anterior
+      - name: Limpiar resumen anterior
+        run: |
+          rm -f src/carga_datos/resumen_modelos_actividad2.txt
+
+      # 8. Ejecutar notebook completo
       - name: Ejecutar modelos de la Actividad 2
         working-directory: src/carga_datos
+        env:
+          MPLBACKEND: Agg
         run: |
-          python - <<'PY'
+          ../../.venv/bin/python - <<'PY'
           import subprocess
           import sys
           from pathlib import Path
@@ -54,6 +84,8 @@ jobs:
                   f"Se esperaba un notebook EA2 y se encontraron: {notebooks}"
               )
 
+          print("Notebook encontrado:", notebooks[0], flush=True)
+
           subprocess.run(
               [
                   sys.executable,
@@ -61,7 +93,7 @@ jobs:
                   "--to", "notebook",
                   "--execute",
                   "--ExecutePreprocessor.timeout=1800",
-                  "--ExecutePreprocessor.kernel_name=python3",
+                  "--ExecutePreprocessor.kernel_name=actividad2",
                   "--output", "EA2_ejecutado.ipynb",
                   str(notebooks[0]),
               ],
@@ -69,12 +101,17 @@ jobs:
           )
           PY
 
+      # 9. Verificar resumen generado
       - name: Verificar resumen automatico
         run: |
           test -s src/carga_datos/resumen_modelos_actividad2.txt
           echo "Resumen generado correctamente"
+          echo "Contenido del resumen:"
+          cat src/carga_datos/resumen_modelos_actividad2.txt
 
+      # 10. Publicar artefactos descargables
       - name: Publicar resumen y evidencias
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: resultados-actividad2

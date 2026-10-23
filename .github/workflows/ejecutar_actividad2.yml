@@ -1,3 +1,4 @@
+
 name: Ejecutar Actividad 2
 
 on:
@@ -42,18 +43,38 @@ jobs:
             datasets huggingface_hub pyarrow \
             nbconvert ipykernel matplotlib-inline
 
+          # Eliminar posibles archivos anteriores de Matplotlib
           .venv/bin/python -m pip uninstall -y matplotlib
+
+          SITE_PACKAGES=$(.venv/bin/python -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
+          rm -rf "$SITE_PACKAGES/matplotlib"
+          rm -rf "$SITE_PACKAGES"/matplotlib-*.dist-info
+
+          # Reinstalar Matplotlib de forma limpia
           .venv/bin/python -m pip install \
-            --no-cache-dir "matplotlib==3.10.7"
+            --no-cache-dir --force-reinstall "matplotlib==3.10.7"
 
       # 5. Verificar Matplotlib
       - name: Verificar Matplotlib
         run: |
-          .venv/bin/python -c "import matplotlib; print('Matplotlib:', matplotlib.__version__)"
-          .venv/bin/python -c "from matplotlib.ft2font import LoadFlags; print('LoadFlags disponible')"
-          .venv/bin/python -c "import matplotlib_inline.backend_inline; print('Backend inline correcto')"
+          .venv/bin/python - <<'PY'
+          import matplotlib
+          from matplotlib.ft2font import LoadFlags, RenderMode
+          import matplotlib.pyplot as plt
+          import matplotlib_inline.backend_inline
 
-      # 6. Configurar kernel Jupyter
+          print("Version de Matplotlib:", matplotlib.__version__)
+          print("LoadFlags:", LoadFlags)
+          print("RenderMode:", RenderMode)
+
+          fig, ax = plt.subplots()
+          ax.plot([1, 2, 3], [1, 4, 9])
+          plt.close(fig)
+
+          print("Matplotlib funciona correctamente")
+          PY
+
+      # 6. Configurar kernel de Jupyter
       - name: Configurar kernel Jupyter
         run: |
           .venv/bin/python -m ipykernel install \
@@ -61,12 +82,12 @@ jobs:
             --name actividad2 \
             --display-name "Python Actividad 2"
 
-      # 7. Limpiar resumen anterior
+      # 7. Limpiar el resumen anterior
       - name: Limpiar resumen anterior
         run: |
           rm -f src/carga_datos/resumen_modelos_actividad2.txt
 
-      # 8. Ejecutar notebook completo
+      # 8. Ejecutar notebook de la Actividad 2
       - name: Ejecutar modelos de la Actividad 2
         working-directory: src/carga_datos
         env:
@@ -81,10 +102,11 @@ jobs:
 
           if len(notebooks) != 1:
               raise RuntimeError(
-                  f"Se esperaba un notebook EA2 y se encontraron: {notebooks}"
+                  f"Se esperaba un notebook de Actividad 2 y se encontraron: {notebooks}"
               )
 
-          print("Notebook encontrado:", notebooks[0], flush=True)
+          notebook = notebooks[0]
+          print("Notebook encontrado:", notebook, flush=True)
 
           subprocess.run(
               [
@@ -95,13 +117,13 @@ jobs:
                   "--ExecutePreprocessor.timeout=1800",
                   "--ExecutePreprocessor.kernel_name=actividad2",
                   "--output", "EA2_ejecutado.ipynb",
-                  str(notebooks[0]),
+                  str(notebook),
               ],
               check=True
           )
           PY
 
-      # 9. Verificar resumen generado
+      # 9. Verificar que el resumen se genero
       - name: Verificar resumen automatico
         run: |
           test -s src/carga_datos/resumen_modelos_actividad2.txt
@@ -109,9 +131,8 @@ jobs:
           echo "Contenido del resumen:"
           cat src/carga_datos/resumen_modelos_actividad2.txt
 
-      # 10. Publicar artefactos descargables
+      # 10. Publicar resultados como artefactos
       - name: Publicar resumen y evidencias
-        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: resultados-actividad2

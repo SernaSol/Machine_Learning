@@ -1,0 +1,46 @@
+REPORTE DEL DATAFRAME
+============================================================
+Filas: 299
+Columnas: 13
+Duplicados: 0
+
+Columnas y tipos:
+- age: int64
+- has_anaemia: bool
+- creatinine_phosphokinase_concentration_in_blood: float64
+- has_diabetes: bool
+- heart_ejection_fraction: float64
+- has_high_blood_pressure: bool
+- platelets_concentration_in_blood: float64
+- serum_creatinine_concentration_in_blood: float64
+- serum_sodium_concentration_in_blood: float64
+- is_male: bool
+- is_smoker: bool
+- days_in_study: int64
+- is_dead: int64
+
+Valores nulos por columna:
+- age: 0
+- has_anaemia: 0
+- creatinine_phosphokinase_concentration_in_blood: 0
+- has_diabetes: 0
+- heart_ejection_fraction: 0
+- has_high_blood_pressure: 0
+- platelets_concentration_in_blood: 0
+- serum_creatinine_concentration_in_blood: 0
+- serum_sodium_concentration_in_blood: 0
+- is_male: 0
+- is_smoker: 0
+- days_in_study: 0
+- is_dead: 0
+
+Estadísticas numéricas:
+           age  creatinine_phosphokinase_concentration_in_blood  heart_ejection_fraction  platelets_concentration_in_blood  serum_creatinine_concentration_in_blood  serum_sodium_concentration_in_blood  days_in_study  is_dead
+count  299.000                                          299.000                  299.000                           299.000                                  299.000                              299.000        299.000  299.000
+mean    60.829                                          581.839                   38.084                        263358.029                                    1.394                              136.625        130.261    0.321
+std     11.895                                          970.288                   11.835                         97804.237                                    1.035                                4.412         77.614    0.468
+min     40.000                                           23.000                   14.000                         25100.000                                    0.500                              113.000          4.000    0.000
+25%     51.000                                          116.500                   30.000                        212500.000                                    0.900                              134.000         73.000    0.000
+50%     60.000                                          250.000                   38.000                        262000.000                                    1.100                              137.000        115.000    0.000
+75%     70.000                                          582.000                   45.000                        303500.000                                    1.400                              140.000        203.000    1.000
+max     95.000                                         7861.000                   80.000                        850000.000                                    9.400                              148.000        285.000    1.000

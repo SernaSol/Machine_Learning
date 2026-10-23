@@ -1,0 +1,106 @@
+ACTIVIDAD 2 - MACHINE LEARNING
+RESUMEN AUTOMÁTICO DE MODELOS
+
+Fecha de ejecución: 2026-10-23 00:52:49
+
+1. DATASET
+Dataset: shijiabraham/insurance-data
+Enlace: https://huggingface.co/datasets/shijiabraham/insurance-data
+Split: train
+
+Registros originales: 1338
+Registros después de limpieza: 1337
+Duplicados eliminados: 1
+Valores faltantes originales: 0
+
+Preprocesamiento:
+- Eliminación de duplicados exactos.
+- Selección de variables predictoras.
+- División de entrenamiento y prueba.
+- Estandarización de variables numéricas para clasificación.
+- Codificación OneHotEncoder para sex y region.
+- Transformaciones ajustadas únicamente con entrenamiento.
+
+2. REGRESIÓN LINEAL SIMPLE
+Objetivo: Predecir costos médicos.
+Variable predictora: bmi
+Variable objetivo: charges
+Algoritmo: LinearRegression
+Parámetros: valores predeterminados de scikit-learn
+División: 80% entrenamiento, 20% prueba
+Semilla: 42
+
+MAE: 9784.65
+RMSE: 12210.04
+R2: 0.0397
+Coeficientes: 392.43654416987977
+Intercepto: 1353.0730722046683
+
+Interpretación:
+El modelo explica aproximadamente
+3.97% de la variación
+de los costos médicos en el conjunto de prueba.
+
+3. REGRESIÓN LINEAL MÚLTIPLE
+Objetivo: Predecir costos médicos.
+Variables predictoras: age, bmi
+Variable objetivo: charges
+Algoritmo: LinearRegression
+Parámetros: valores predeterminados de scikit-learn
+División: 80% entrenamiento, 20% prueba
+Semilla: 42
+
+MAE: 9575.76
+RMSE: 12559.72
+R2: 0.1415
+Coeficientes (age, bmi): [227.4070270912075, 280.82349109921864]
+Intercepto: -4460.238126422071
+
+Interpretación:
+El modelo explica aproximadamente
+14.15% de la variación
+de los costos médicos en el conjunto de prueba.
+
+4. MODELO DE CLASIFICACIÓN
+Objetivo: Clasificar si una persona fuma.
+Variable objetivo: smoker
+Clases: no, yes
+Variables predictoras: age, bmi, children, sex, region
+Algoritmo: LogisticRegression
+max_iter: 1000
+class_weight: balanced
+random_state: 42
+Otros parámetros: valores predeterminados
+División: 80% entrenamiento, 20% prueba
+Estratificación: smoker
+
+Accuracy: 0.6007
+Precision (yes): 0.2679
+Recall (yes): 0.5455
+F1-score (yes): 0.3593
+
+Matriz de confusión (filas reales, columnas predichas):
+Orden de clases: no, yes
+[[131  82]
+ [ 25  30]]
+
+Interpretación:
+El modelo identifica aproximadamente
+54.55% de los fumadores
+del conjunto de prueba.
+
+La precisión para fumadores es
+26.79%.
+
+5. CONCLUSIONES Y LIMITACIONES
+La regresión múltiple se compara con la regresión
+simple para evaluar el aporte de la edad.
+
+La capacidad predictiva de ambos modelos de
+regresión es limitada.
+
+La clasificación balanceada permite identificar
+parte de los fumadores, aunque produce falsos positivos.
+
+Las métricas corresponden a los datos de prueba
+de esta ejecución.

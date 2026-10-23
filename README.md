@@ -1,11 +1,22 @@
 # Machine_Learning
 
-Proyecto de aprendizaje automático y análisis de datos con Python. Incluye un notebook para descargar y explorar un dataset de insuficiencia cardíaca desde Hugging Face, transformar sus datos y generar reportes descriptivos.
-
 ## Participantes Grupo *AE_Grupo 2*
 
 Sol Elena Serna Vargas
 Juan Esteban Ospina Lopez
+
+
+Actividad 2
+
+## Dataset
+https://huggingface.co/datasets/shijiabraham/insurance-data
+
+
+
+
+
+Actividad 1
+Proyecto de aprendizaje automático y análisis de datos con Python. Incluye un notebook para descargar y explorar un dataset de insuficiencia cardíaca desde Hugging Face, transformar sus datos y generar reportes descriptivos.
 
 ## Dataset
 https://huggingface.co/datasets/mstz/heart_failure

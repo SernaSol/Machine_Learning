@@ -10,8 +10,6 @@ on:
 permissions:
   contents: write
 
-# Evita que las actividades 1 y 2 intenten
-# publicar cambios al mismo tiempo.
 concurrency:
   group: ejecutar-main
   cancel-in-progress: false
@@ -25,7 +23,6 @@ jobs:
       MPLBACKEND: Agg
 
     steps:
-
       # 1. Descargar repositorio
       - name: Descargar repositorio
         uses: actions/checkout@v4
@@ -49,14 +46,11 @@ jobs:
       - name: Instalar dependencias
         run: |
           .venv/bin/python -m pip install --upgrade pip
-
-          .venv/bin/python -m pip install \
-            -r requirements.txt
-
+          .venv/bin/python -m pip install -r requirements.txt
           .venv/bin/python -m pip install \
             pyarrow openpyxl matplotlib-inline
 
-      # 5. Verificar libreria de graficas
+      # 5. Verificar Matplotlib
       - name: Verificar Matplotlib
         run: |
           .venv/bin/python - <<'PY'
@@ -80,17 +74,16 @@ jobs:
             --name actividad2 \
             --display-name "Python Actividad 2"
 
-      # 7. Limpiar resultados previos en el runner
+      # 7. Limpiar resultados previos del runner
       - name: Limpiar resultados anteriores
         run: |
           mkdir -p src/carga_datos/entrenamiento
-
           rm -f src/carga_datos/resumen_modelos_actividad2.txt
 
           find src/carga_datos/entrenamiento \
             -type f -name "*.pkl" -delete
 
-          echo "Archivos anteriores limpiados del runner"
+          echo "Resultados anteriores limpiados del runner"
 
       # 8. Ejecutar notebook completo
       - name: Ejecutar modelos de la Actividad 2
@@ -105,40 +98,31 @@ jobs:
 
           if len(notebooks) != 1:
               raise RuntimeError(
-                  "Se esperaba exactamente un notebook "
-                  f"de Actividad 2. Encontrados: {notebooks}"
+                  "Se esperaba un notebook de Actividad 2. "
+                  f"Encontrados: {notebooks}"
               )
 
           notebook = notebooks[0]
-
-          print(
-              "Ejecutando notebook:",
-              notebook,
-              flush=True
-          )
+          print("Ejecutando:", notebook, flush=True)
 
           subprocess.run(
               [
                   sys.executable,
-                  "-m",
-                  "jupyter",
-                  "nbconvert",
-                  "--to",
-                  "notebook",
+                  "-m", "jupyter", "nbconvert",
+                  "--to", "notebook",
                   "--execute",
                   "--ExecutePreprocessor.timeout=1800",
                   "--ExecutePreprocessor.kernel_name=actividad2",
-                  "--output",
-                  "EA2_ejecutado.ipynb",
+                  "--output", "EA2_ejecutado.ipynb",
                   str(notebook),
               ],
-              check=True
+              check=True,
           )
 
           print("Notebook ejecutado correctamente")
           PY
 
-      # 9. Verificar nuevos modelos
+      # 9. Verificar modelos nuevos
       - name: Verificar modelos generados
         run: |
           .venv/bin/python - <<'PY'
@@ -146,20 +130,20 @@ jobs:
 
           carpeta = Path("src/carga_datos/entrenamiento")
 
-          modelos = sorted(carpeta.glob("*_modelo.pkl"))
+          regresiones = sorted(carpeta.glob("*_modelo.pkl"))
           clasificaciones = sorted(
               carpeta.glob("*_clasificacion.pkl")
           )
 
-          print("MODELOS DE REGRESION:")
-          for archivo in modelos:
-              print(" -", archivo.name)
+          print("Modelos de regresion:")
+          for archivo in regresiones:
+              print(archivo.name)
 
-          print("MODELOS DE CLASIFICACION:")
+          print("Modelos de clasificacion:")
           for archivo in clasificaciones:
-              print(" -", archivo.name)
+              print(archivo.name)
 
-          if not modelos:
+          if not regresiones:
               raise RuntimeError(
                   "No se genero ningun modelo de regresion"
               )
@@ -169,19 +153,17 @@ jobs:
                   "No se genero ningun modelo de clasificacion"
               )
 
-          print("Modelos nuevos verificados correctamente")
+          print("Modelos generados correctamente")
           PY
 
-      # 10. Verificar resumen automatico
+      # 10. Verificar resumen
       - name: Verificar resumen automatico
         run: |
           test -s src/carga_datos/resumen_modelos_actividad2.txt
-
           echo "Resumen generado correctamente"
-
           cat src/carga_datos/resumen_modelos_actividad2.txt
 
-      # 11. Publicar artefactos descargables
+      # 11. Publicar artefactos
       - name: Publicar resultados de Actividad 2
         uses: actions/upload-artifact@v4
         with:
@@ -193,7 +175,7 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-      # 12. Guardar resultados en repositorio
+      # 12. Guardar resultados en GitHub
       - name: Guardar modelos y resumen en GitHub
         run: |
           git config user.name "github-actions[bot]"
@@ -207,20 +189,27 @@ jobs:
             -type f -name "*.pkl" \
             -exec git add -f -- {} +
 
-          echo "Archivos preparados para guardar:"
+          echo "Archivos preparados:"
           git diff --cached --name-only
 
           if git diff --cached --quiet; then
-            echo "No hay cambios nuevos para guardar"
+            echo "No hay archivos nuevos para guardar"
             exit 0
           fi
 
           git commit -m \
             "chore: actualizar modelos y resumen actividad 2 [skip ci]"
 
+          # Guardar cambios temporales no incluidos en el commit
+          # para que no bloqueen el rebase.
+          git stash push --include-untracked \
+            -m "Cambios temporales del runner"
+
+          # Integrar posibles commits de otros workflows
           git fetch origin main
           git rebase origin/main
 
+          # Publicar los modelos y el resumen
           git push origin HEAD:main
 
-          echo "Resultados publicados en GitHub"
+          echo "Modelos y resumen guardados en GitHub"

@@ -5,3 +5,4 @@ ipykernel==6.29.5
 datasets
 nbconvert
 scikit-learn
+Seaborn

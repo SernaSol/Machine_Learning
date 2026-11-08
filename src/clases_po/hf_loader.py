@@ -3,7 +3,12 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Literal
-from datasets import load_dataset  
+
+try:
+    from datasets import load_dataset
+except ModuleNotFoundError:  # pragma: no cover - se valida solo cuando se usa el loader
+    load_dataset = None
+
 import pandas as pd
 
 FileType = Literal["csv", "json", "parquet", "xlsx"]
@@ -56,7 +61,11 @@ class HFDatasetLoader:
 
     def load(self) -> pd.DataFrame:
         """Descarga el dataset, lo guarda si se configuró una salida y retorna el DataFrame."""
-        
+        if load_dataset is None:
+            raise ModuleNotFoundError(
+                "La dependencia 'datasets' no está instalada. "
+                "Ejecuta: ./env/bin/python -m pip install -r requirements.txt"
+            )
 
         dataset = load_dataset(
             self.dataset_name,

@@ -5,6 +5,63 @@
 Sol Elena Serna Vargas
 Juan Esteban Ospina Lopez
 
+Actividad 3 Modelo No supervisado K-Means
+
+0. Pregunta de negocio
+
+¿Cuáles son los arquetipos naturales de asegurados presentes en la cartera en función de sus características demográficas, biológicas y de estilo de vida (edad, IMC, número de dependientes y hábito de fumar), y cómo varían sus costos médicos cobrados para diseñar programas de salud preventiva focalizados y optimizar el diseño de pólizas?
+
+# ¿Quién se beneficia?
+
+Los actores mas beneficiados son:
+
+-La Gerencia de Salud Preventiva, 
+-El Equipo de Suscripción 
+-La Dirección de Producto de la compañía aseguradora.
+
+# Justificacion de la pregunta planteada
+
+El conjunto de datos permite responder la pregunta planteada porque reúne en una misma fuente:
+
+-Atributos biológicos y conductuales directos (age, bmi, smoker, children) que permiten alimentar el algoritmo No Supervisado (K-Means) para agrupar a las personas por perfil de riesgo.
+
+-Variable de impacto económico (charges), que permite validar posteriormente el costo promedio financiero asociado a cada clúster descubierto.
+
+## 2. Dataset utilizado para el modelo K-Means
+
+- **Nombre:** Medical Insurance
+- **Identificador:** `shijiabraham/insurance-data`
+- **Fuente:** https://huggingface.co/datasets/shijiabraham/insurance-data
+- **Split:** `train`
+- **Registros originales:** 1.338
+- **Columnas:** 7
+
+El dataset contiene información de características personales y costos de seguros médicos.
+
+| Columna | Descripción |
+|---|---|
+| `age` | Edad de la persona |
+| `sex` | Sexo |
+| `bmi` | Índice de masa corporal |
+| `children` | Número de hijos |
+| `smoker` | Indica si la persona fuma |
+| `region` | Región de residencia |
+| `charges` | Costos médicos registrados |
+
+Los datos se obtienen automáticamente desde Hugging Face mediante la clase `HFDatasetLoader`, sin necesidad de descargarlos manualmente.
+
+## 3. Preprocesamiento
+
+Inicialmente se analizaron las dimensiones, los tipos de datos, los valores faltantes y los registros duplicados.
+
+| Indicador | Antes | Después |
+|---|---:|---:|
+| Registros | 1.338 | 1.337 |
+| Duplicados exactos | 1 | 0 |
+| Valores faltantes | 0 | 0 |
+
+Se eliminó un registro duplicado exacto y no fue necesaria la imputación de valores faltantes.
+
 
 Actividad 2  Modelos de predicción y clasificación
 

@@ -11,6 +11,15 @@ Actividad 3 Modelo No supervisado K-Means
 
 ¿Cuáles son los arquetipos naturales de asegurados presentes en la cartera en función de sus características demográficas, biológicas y de estilo de vida (edad, IMC, número de dependientes y hábito de fumar), y cómo varían sus costos médicos cobrados para diseñar programas de salud preventiva focalizados y optimizar el diseño de pólizas?
 
+El modelo desarrollado pertenece al Aprendizaje No Supervisado, utilizando el algoritmo de agrupamiento K-Means.
+
+El problema no busca predecir una categoría predefinida (como "Cliente de alto riesgo" vs. "Cliente de bajo riesgo"), ni calcular un valor futuro a partir de una respuesta conocida. El objetivo es descubrir la estructura latente y natural de la población de asegurados sin supervisión o guía previa.El algoritmo evalúa la proximidad geométrica de las observaciones en el espacio de características estandarizado (X). Esto permite identificar automáticamente la formación de clusters basados en la interacción conjunta de variables demográficas (age, children), médicas/estilo de vida (bmi, smoker) y financieras (charges).
+
+# Variables a trabajar para el modelo no Supervisado
+
+Variables numericas : age, bmi, children, charges
+Variables categoricas = sex, smoker, region
+
 # ¿Quién se beneficia?
 
 Los actores mas beneficiados son:
@@ -25,7 +34,16 @@ El conjunto de datos permite responder la pregunta planteada porque reúne en un
 
 -Atributos biológicos y conductuales directos (age, bmi, smoker, children) que permiten alimentar el algoritmo No Supervisado (K-Means) para agrupar a las personas por perfil de riesgo.
 
--Variable de impacto económico (charges), que permite validar posteriormente el costo promedio financiero asociado a cada clúster descubierto.
+-Variable de impacto económico (charges), que permite validar posteriormente el costo promedio financiero asociado a cada clúster descubierto.Ademas encuentra de forma independiente cómo se subdivide la cartera de asegurados en grupos homogéneos internamente y heterogéneos entre sí, permitiendo construir perfiles de riesgo y estrategias comerciales de suscripción a partir de datos sin etiquetar.
+
+El modelo K-Means funciona como organizar de multitudes. por grupos según qué tan parecidos sean, es decir de acuerdo al total de datos determina cuantos grupos parecidos hay, con las visualizaciones de codo y silueta determinamos cuando grupos hacemos en este caso nos da un valor k = 4, aunque se trabajo con un grupo de k = 3 para menos riesgo de sobresegmentar los datos, pero tambien tiene su desventaja agrupa a personas jóvenes y adultos de mediana edad dentro del mismo grupo si ninguno fuma, perdiendo sensibilidad actuarial.
+
+Decidimos entrenar el modelo para facilitar las cosas con k = 3, Realizamos la gráfica donde nos asigna los puntos al centroide o al grupo más cercano y recalcula los centroides. En este caso tenemos el grupo verde(Fumadores de Alto Riesgo) que concentra a los asegurados con hábito de fumar, quienes representan el costo médico más alto de la cartera, en el centro el grupo naranja(No Fumadores de Bajo Riesgo)Asegurados jóvenes o con BMI dentro de rangos normales, y al lado derecho azul/morado(No Fumadores de Riesgo Moderado) Asegurados de mayor edad o con dependientes e BMI elevado.
+
+Mas abajo generamos gráficos que muestran la radiografía de 3 grupos de personas (Clúster 0, 1 y 2) para entender cómo influyen la edad, el peso y el hábito de fumar en sus gastos médicos.
+
+y por ultimo realizamos un perfilamiento estadistico del modelo, donde nos da un conteo de cuantos personas se agruparon por cluster,tmabien que porcentaje de personas fuman mas,ademas los promedios de edad, bmi y gastos por cada cluster. 
+
 
 ## 2. Dataset utilizado para el modelo K-Means
 

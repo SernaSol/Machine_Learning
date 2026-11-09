@@ -1,0 +1,94 @@
+
+name: Ejecutar
+
+on:
+  push:
+    branches:
+      - feature/actividad3
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ejecutar-feature/actividad3
+  cancel-in-progress: false
+
+jobs:
+  ejecutar-notebook:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          ref: feature/actividad3
+          fetch-depth: 0
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Crear entorno virtual
+        run: python -m venv .venv
+
+      - name: Instalar dependencias
+        run: |
+          .venv/bin/python -m pip install --upgrade pip
+          .venv/bin/python -m pip install -r requirements.txt
+          .venv/bin/python -m pip install pyarrow openpyxl
+
+      - name: Limpiar datos y reportes generados
+        run: |
+          mkdir -p src/carga_datos/datos
+          mkdir -p src/carga_datos/datos/graficas
+          mkdir -p src/carga_datos/reportes
+
+          rm -f src/carga_datos/datos/heart_failure.csv
+          find src/carga_datos/reportes \
+            -mindepth 1 -type f -delete
+
+      - name: Ejecutar EA3_Modelo_No_Supervisor.ipynb
+        working-directory: src/carga_datos
+        run: |
+          ../../.venv/bin/python -m jupyter nbconvert \
+            --to notebook \
+            --execute \
+            --inplace \
+            --ExecutePreprocessor.timeout=1800 \
+            EA3_Modelo_No_Supervisor.ipynb
+
+      - name: Confirmar cambios generados
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            src/carga_datos/datos \
+            src/carga_datos/datos/graficas \
+            src/carga_datos/reportes \
+            src/carga_datos/EA3_Modelo_No_Supervisor.ipynb
+
+          if git diff --cached --quiet; then
+            echo "No se generaron cambios."
+            exit 0
+          fi
+
+          git commit -m \
+            "chore: actualizar resultados de actividad [skip ci]"
+
+          # Apartar cambios no incluidos en el commit
+          git stash push --include-untracked \
+            -m "Cambios temporales Actividad 3"
+
+          # Integrar commits nuevos del repositorio
+          git fetch origin feature/actividad3
+          git rebase origin/feature/actividad3
+
+          # Publicar los resultados de Actividad 3
+          git push origin HEAD:feature/actividad3
+
+          echo "Resultados de Actividad 3 publicados correctamente"

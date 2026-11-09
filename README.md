@@ -2,75 +2,117 @@
 
 ## Participantes Grupo *AE_Grupo 2*
 
-Sol Elena Serna Vargas
-Juan Esteban Ospina Lopez
+- Sol Elena Serna Vargas
+- Juan Esteban Ospina Lopez
 
-Actividad 3 Modelo No supervisado K-Means
 
-# 0. Pregunta de negocio
+# Actividad 3 – Modelo de Aprendizaje No Supervisado K-Means
 
-¿Cuáles son los arquetipos naturales de asegurados presentes en la cartera en función de sus características demográficas, biológicas y de estilo de vida (edad, IMC, número de dependientes y hábito de fumar), y cómo varían sus costos médicos cobrados para diseñar programas de salud preventiva focalizados y optimizar el diseño de pólizas?
+## 0. Pregunta de negocio
 
-El modelo desarrollado pertenece al Aprendizaje No Supervisado, utilizando el algoritmo de agrupamiento K-Means.
+¿Cuáles son los arquetipos naturales de asegurados presentes en la cartera en función de sus características demográficas, biológicas y de estilo de vida (edad, IMC, número de dependientes y hábito de fumar), y cómo varían sus costos médicos registrados para diseñar programas de salud preventiva focalizados y apoyar el diseño de pólizas?
 
-El problema no busca predecir una categoría predefinida (como "Cliente de alto riesgo" vs. "Cliente de bajo riesgo"), ni calcular un valor futuro a partir de una respuesta conocida. El objetivo es descubrir la estructura latente y natural de la población de asegurados sin supervisión o guía previa.El algoritmo evalúa la proximidad geométrica de las observaciones en el espacio de características estandarizado (X). Esto permite identificar automáticamente la formación de clusters basados en la interacción conjunta de variables demográficas (age, children), médicas/estilo de vida (bmi, smoker) y financieras (charges).
+El modelo desarrollado pertenece al **aprendizaje no supervisado**, utilizando el algoritmo de agrupamiento **K-Means**.
 
-## Variables a trabajar para el modelo no Supervisado
+El problema no busca predecir una categoría previamente definida, como «cliente de alto riesgo» o «cliente de bajo riesgo», ni estimar directamente un valor futuro. Su objetivo es descubrir patrones y agrupaciones en una población de asegurados sin utilizar etiquetas de clasificación.
 
-Variables numericas : age, bmi, children, charges
-Variables categoricas = sex, smoker, region
+El algoritmo evalúa la similitud de las observaciones mediante distancias en un espacio de características transformadas y estandarizadas, permitiendo identificar clústeres a partir de la combinación de variables demográficas, biológicas, de comportamiento y financieras.
 
-## ¿Quién se beneficia?
+### Variables utilizadas para el modelo no supervisado
 
-Los actores mas beneficiados son:
+**Variables numéricas:**
+- `age`: edad.
+- `bmi`: índice de masa corporal.
+- `children`: número de hijos o dependientes.
+- `charges`: gastos médicos registrados.
 
--La Gerencia de Salud Preventiva, 
--El Equipo de Suscripción 
--La Dirección de Producto de la compañía aseguradora.
+**Variables categóricas:**
+- `sex`: sexo.
+- `smoker`: hábito de fumar.
+- `region`: región geográfica.
 
-## Justificacion de la pregunta planteada
+### ¿Quiénes se benefician?
 
-El conjunto de datos permite responder la pregunta planteada porque reúne en una misma fuente:
+Los principales beneficiarios potenciales son la Gerencia de Salud Preventiva, el Equipo de Suscripción y la Dirección de Producto de una compañía aseguradora.
 
--Atributos biológicos y conductuales directos (age, bmi, smoker, children) que permiten alimentar el algoritmo No Supervisado (K-Means) para agrupar a las personas por perfil de riesgo.
+Los resultados pueden servir como insumo exploratorio para identificar perfiles de asegurados, orientar programas preventivos y analizar diferencias en los gastos médicos.
 
--Variable de impacto económico (charges), que permite validar posteriormente el costo promedio financiero asociado a cada clúster descubierto.Ademas encuentra de forma independiente cómo se subdivide la cartera de asegurados en grupos homogéneos internamente y heterogéneos entre sí, permitiendo construir perfiles de riesgo y estrategias comerciales de suscripción a partir de datos sin etiquetar.
+### Justificación de la pregunta planteada
 
-El modelo K-Means funciona como organizar de multitudes. por grupos según qué tan parecidos sean, es decir de acuerdo al total de datos determina cuantos grupos parecidos hay, con las visualizaciones de codo y silueta determinamos cuando grupos hacemos en este caso nos da un valor k = 4, aunque se trabajo con un grupo de k = 3 para menos riesgo de sobresegmentar los datos, pero tambien tiene su desventaja agrupa a personas jóvenes y adultos de mediana edad dentro del mismo grupo si ninguno fuma, perdiendo sensibilidad actuarial.
+El conjunto de datos permite abordar la pregunta de negocio porque reúne características personales, biológicas, conductuales y financieras de los asegurados.
 
-Decidimos entrenar el modelo para facilitar las cosas con k = 3, Realizamos la gráfica donde nos asigna los puntos al centroide o al grupo más cercano y recalcula los centroides. En este caso tenemos el grupo verde(Fumadores de Alto Riesgo) que concentra a los asegurados con hábito de fumar, quienes representan el costo médico más alto de la cartera, en el centro el grupo naranja(No Fumadores de Bajo Riesgo)Asegurados jóvenes o con BMI dentro de rangos normales, y al lado derecho azul/morado(No Fumadores de Riesgo Moderado) Asegurados de mayor edad o con dependientes e BMI elevado.
+Las variables `age`, `bmi`, `children` y `smoker` permiten caracterizar diferencias entre las personas. Adicionalmente, `sex` y `region` aportan información para la segmentación.
 
-Mas abajo generamos gráficos que muestran la radiografía de 3 grupos de personas (Clúster 0, 1 y 2) para entender cómo influyen la edad, el peso y el hábito de fumar en sus gastos médicos.
+La variable `charges` representa los gastos médicos registrados y permite comparar los niveles de costo entre los grupos identificados.
 
-y por ultimo realizamos un perfilamiento estadistico del modelo, donde nos da un conteo de cuantos personas se agruparon por cluster,tmabien que porcentaje de personas fuman mas,ademas los promedios de edad, bmi y gastos por cada cluster. 
+Es importante aclarar que, en la implementación actual, **`charges` también participa en el entrenamiento de K-Means**. Por tanto, los gastos médicos influyen en la construcción de los clústeres y no constituyen una variable de validación financiera completamente independiente.
 
+### Selección del número de clústeres
+
+El algoritmo K-Means agrupa observaciones según su similitud, asignándolas al centroide más cercano y actualizando iterativamente los centroides.
+
+Para evaluar el número de grupos se utilizaron el método del codo y el coeficiente de silueta, considerando valores de K entre 2 y 10.
+
+En el análisis exploratorio, las visualizaciones favorecieron **K=4**. Sin embargo, se decidió implementar el modelo final con **K=3**, buscando una segmentación más sencilla de interpretar y evitando una posible fragmentación excesiva de los grupos.
+
+Esta decisión representa un compromiso entre interpretabilidad y calidad de agrupamiento, pero no demuestra por sí sola que K=3 sea estadísticamente superior.
+
+Una posible limitación es que, al utilizar menos grupos, personas con características diferentes podrían quedar agrupadas en un mismo clúster, reduciendo el nivel de detalle disponible para el análisis.
+
+### Interpretación de los grupos
+
+El modelo final genera tres clústeres, identificados como 0, 1 y 2.
+
+Se construyen visualizaciones mediante PCA para representar los grupos en dos dimensiones, así como gráficos comparativos de edad, IMC, gastos médicos y hábito de fumar.
+
+La interpretación de cada clúster debe realizarse utilizando los promedios, frecuencias y distribuciones obtenidos en la ejecución del modelo.
+
+Los colores de las gráficas sirven para diferenciar visualmente los grupos y no representan, por sí mismos, niveles de riesgo.
+
+### Perfilamiento estadístico
+
+Finalmente, se realiza un perfilamiento estadístico que permite identificar:
+
+- Número de asegurados asignados a cada clúster.
+- Porcentaje de fumadores y no fumadores por grupo.
+- Edad promedio de los asegurados.
+- IMC promedio.
+- Número promedio de dependientes.
+- Gastos médicos promedio.
+
+Esta caracterización permite comparar los perfiles encontrados y explorar posibles aplicaciones en programas preventivos y análisis de costos.
 
 ## 2. Dataset utilizado para el modelo K-Means
 
-- **Nombre:** Medical Insurance
-- **Identificador:** `shijiabraham/insurance-data`
-- **Fuente:** https://huggingface.co/datasets/shijiabraham/insurance-data
-- **Split:** `train`
-- **Registros originales:** 1.338
-- **Columnas:** 7
+**Nombre:** Medical Insurance
 
-El dataset contiene información de características personales y costos de seguros médicos.
+**Identificador:** `shijiabraham/insurance-data`
+
+**Fuente:** https://huggingface.co/datasets/shijiabraham/insurance-data
+
+**Split:** `train`
+
+**Registros originales:** 1.338
+
+**Columnas originales:** 7
+
+El dataset contiene información sobre características personales y gastos médicos registrados.
 
 | Columna | Descripción |
 |---|---|
 | `age` | Edad de la persona |
 | `sex` | Sexo |
 | `bmi` | Índice de masa corporal |
-| `children` | Número de hijos |
+| `children` | Número de hijos o dependientes |
 | `smoker` | Indica si la persona fuma |
 | `region` | Región de residencia |
-| `charges` | Costos médicos registrados |
+| `charges` | Gastos médicos registrados |
 
-Los datos se obtienen automáticamente desde Hugging Face mediante la clase `HFDatasetLoader`, sin necesidad de descargarlos manualmente.
+Los datos se obtienen automáticamente desde Hugging Face mediante la clase `HFDatasetLoader`, sin necesidad de realizar una descarga manual previa.
 
 ## 3. Preprocesamiento
 
-Inicialmente se analizaron las dimensiones, los tipos de datos, los valores faltantes y los registros duplicados.
+Inicialmente se analizaron las dimensiones del dataset, los tipos de datos, los valores faltantes y los registros duplicados.
 
 | Indicador | Antes | Después |
 |---|---:|---:|
@@ -78,8 +120,148 @@ Inicialmente se analizaron las dimensiones, los tipos de datos, los valores falt
 | Duplicados exactos | 1 | 0 |
 | Valores faltantes | 0 | 0 |
 
-Se eliminó un registro duplicado exacto y no fue necesaria la imputación de valores faltantes.
+Se identificó y eliminó un registro duplicado exacto. No fue necesario realizar imputación de valores faltantes.
 
+Posteriormente, se aplicaron las siguientes transformaciones:
+
+**StandardScaler:** estandarización de las variables numéricas `age`, `bmi`, `children` y `charges`.
+
+**OneHotEncoder:** transformación de las variables categóricas `sex`, `smoker` y `region`, utilizando `drop='first'`.
+
+**ColumnTransformer:** integración de las transformaciones numéricas y categóricas para construir la matriz de características utilizada por K-Means.
+
+La estandarización es importante porque K-Means utiliza distancias euclidianas y las diferencias de escala podrían hacer que algunas variables numéricas dominaran el agrupamiento.
+
+## 4. Entrenamiento y evaluación del modelo
+
+Se implementó K-Means con la siguiente configuración:
+
+| Parámetro | Valor |
+|---|---|
+| Algoritmo | K-Means |
+| Tipo de aprendizaje | No supervisado |
+| Número de clústeres | 3 |
+| `random_state` | 42 |
+| `n_init` | 10 |
+| Valores de K evaluados | 2 a 10 |
+
+Se utilizaron las siguientes métricas para evaluar el agrupamiento:
+
+- **Inercia (WCSS):** mide la suma de las distancias cuadráticas de las observaciones respecto al centroide asignado.
+- **Coeficiente de silueta:** evalúa la cohesión y separación de los grupos.
+- **Davies-Bouldin:** permite comparar la separación y dispersión entre clústeres.
+- **Calinski-Harabasz:** compara la dispersión entre grupos con la dispersión interna.
+
+Los valores calculados se generan automáticamente durante la ejecución del modelo y se incorporan al reporte de resultados.
+
+## 5. Visualización de resultados
+
+El notebook `EA3_Modelo_No_Supervisor.ipynb` genera visualizaciones para analizar y comparar los tres clústeres.
+
+Se incluyen:
+
+- Método del codo y coeficiente de silueta.
+- Representación bidimensional mediante PCA.
+- Distribución de gastos médicos por clúster.
+- Distribución de edad por clúster.
+- Distribución del índice de masa corporal por clúster.
+- Gastos médicos promedio según el hábito de fumar.
+
+Las gráficas se almacenan en:
+
+`src/carga_datos/datos/graficas/`
+
+Archivos generados:
+
+- `elbow_silhouette.png`
+- `pca_clusters.png`
+- `cluster_feature_distributions.png`
+
+Las visualizaciones permiten identificar diferencias entre los grupos, aunque no establecen por sí solas relaciones causales entre las características de los asegurados y los gastos médicos.
+
+## 6. Generación automática del reporte K-Means
+
+El proyecto incluye el módulo `src/clases_po/kmeans.py`, que contiene la función:
+
+`generar_reporte_kmeans()`
+
+Esta función realiza el procesamiento y entrenamiento del modelo y genera un reporte en formato TXT.
+
+El documento incluye información del dataset, configuración del experimento, métricas de evaluación y perfilamiento estadístico de los grupos.
+
+**Archivo generado:**
+
+`src/carga_datos/reportes/reporte_kmeans.txt`
+
+Para garantizar la compatibilidad entre el entorno local y GitHub Actions, se utilizan rutas construidas a partir de la raíz del repositorio, evitando rutas absolutas específicas de un equipo.
+
+## 7. Automatización con GitHub Actions
+
+El proyecto incorpora un workflow de GitHub Actions para automatizar la ejecución del notebook y la actualización de los resultados.
+
+El workflow se activa cuando se realiza un `push` sobre la rama configurada.
+
+El proceso contempla:
+
+1. Descargar el repositorio.
+2. Configurar Python 3.12.
+3. Crear el entorno virtual.
+4. Instalar las dependencias.
+5. Preparar y limpiar las carpetas de resultados.
+6. Ejecutar `EA3_Modelo_No_Supervisor.ipynb`.
+7. Generar las gráficas y el reporte TXT.
+8. Confirmar y publicar los cambios generados, cuando existan y los permisos del repositorio lo permitan.
+
+La ejecución se considera satisfactoria cuando todos los pasos del workflow finalizan correctamente.
+
+## 8. Ejecución del proyecto
+
+Desde la raíz del repositorio, instalar las dependencias:
+
+```bash
+python -m pip install -r requirements.txt
+python -m pip install jupyter nbconvert nbclient ipykernel
+```
+
+Ingresar a la carpeta del notebook:
+
+```bash
+cd src/carga_datos
+```
+
+Ejecutar:
+
+```bash
+python -m jupyter nbconvert --to notebook --execute --inplace --ExecutePreprocessor.timeout=1800 EA3_Modelo_No_Supervisor.ipynb
+```
+
+Al finalizar correctamente, el proceso permite actualizar los resultados del notebook y generar los archivos de salida.
+
+## 9. Conclusiones
+
+El algoritmo K-Means permitió desarrollar una segmentación exploratoria de los asegurados en tres grupos utilizando sus características demográficas, biológicas, conductuales y financieras.
+
+El análisis de los clústeres permite comparar diferencias relacionadas con la edad, el índice de masa corporal, el hábito de fumar y los gastos médicos.
+
+El perfilamiento estadístico proporciona información para reconocer grupos con características similares y explorar estrategias de prevención y seguimiento.
+
+Los resultados pueden apoyar el análisis de perfiles de gasto médico y aportar información preliminar para la toma de decisiones en una compañía aseguradora. Sin embargo, no deben interpretarse directamente como una clasificación actuarial validada del riesgo individual.
+
+Como trabajo futuro, se propone evaluar modelos supervisados de regresión, como Random Forest o XGBoost, para estimar gastos médicos.
+
+Para estos modelos deberá garantizarse una separación adecuada entre entrenamiento y prueba, evitando utilizar información de la variable objetivo durante la construcción de características predictoras.
+
+## 10. Consideraciones finales
+
+El proyecto integra procesamiento de datos, aprendizaje no supervisado, evaluación de modelos, visualización y automatización.
+
+La utilización de GitHub Actions facilita la reproducibilidad técnica del proceso y la actualización de los resultados generados.
+
+La selección de K=3 responde a una decisión de interpretación del modelo, mientras que los resultados exploratorios sugieren analizar también K=4 en futuras comparaciones.
+
+El modelo representa una herramienta exploratoria de segmentación y no sustituye evaluaciones médicas ni actuariales especializadas.
+
+---------------------------------------------------------------------------
 
 Actividad 2  Modelos de predicción y clasificación
 

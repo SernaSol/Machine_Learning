@@ -4,13 +4,13 @@ name: Ejecutar
 on:
   push:
     branches:
-      - feature/actividad3
+      - main
 
 permissions:
   contents: write
 
 concurrency:
-  group: ejecutar-feature/actividad3
+  group: ejecutar-actividad3
   cancel-in-progress: false
 
 jobs:
@@ -21,7 +21,7 @@ jobs:
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
-          ref: feature/actividad3
+          ref: main
           fetch-depth: 0
 
       - name: Configurar Python

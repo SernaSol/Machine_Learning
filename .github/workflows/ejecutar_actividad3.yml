@@ -1,9 +1,10 @@
-name: Ejecutar
+name: Ejecutar Actividad 3
 
 on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -13,15 +14,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  ejecutar-notebook:
+  ejecutar-actividad3:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    env:
+      MPLBACKEND: Agg
 
     steps:
+      # 1. Descargar repositorio
       - name: Descargar repositorio
         uses: actions/checkout@v4
         with:
+          ref: main
           fetch-depth: 0
 
+      # 2. Configurar Python
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
@@ -29,25 +37,28 @@ jobs:
           cache: pip
           cache-dependency-path: requirements.txt
 
+      # 3. Crear entorno virtual
       - name: Crear entorno virtual
         run: python -m venv .venv
 
+      # 4. Instalar dependencias
       - name: Instalar dependencias
         run: |
           .venv/bin/python -m pip install --upgrade pip
           .venv/bin/python -m pip install -r requirements.txt
           .venv/bin/python -m pip install pyarrow openpyxl jupyter nbconvert
 
-      - name: Limpiar datos y reportes generados
+      # 5. Preparar carpetas
+      - name: Preparar resultados de Actividad 3
         run: |
-          mkdir -p src/carga_datos/datos
           mkdir -p src/carga_datos/datos/graficas
           mkdir -p src/carga_datos/reportes
 
-          rm -f src/carga_datos/datos/heart_failure.csv
-          find src/carga_datos/reportes -mindepth 1 -type f -delete
+          # Limpiar exclusivamente el reporte de Actividad 3
+          rm -f src/carga_datos/reportes/reporte_kmeans.txt
 
-      - name: Ejecutar EA3_Modelo_No_Supervisor.ipynb
+      # 6. Ejecutar notebook de K-Means
+      - name: Ejecutar notebook Actividad 3
         working-directory: src/carga_datos
         run: |
           ../../.venv/bin/python -m jupyter nbconvert \
@@ -57,27 +68,67 @@ jobs:
             --ExecutePreprocessor.timeout=1800 \
             EA3_Modelo_No_Supervisor.ipynb
 
-      - name: Confirmar cambios generados
+      # 7. Verificar reporte automatico
+      - name: Verificar reporte K-Means
+        run: |
+          test -s src/carga_datos/reportes/reporte_kmeans.txt
+
+          echo "Reporte generado correctamente"
+          cat src/carga_datos/reportes/reporte_kmeans.txt
+
+      # 8. Mostrar graficas generadas
+      - name: Verificar graficas
+        run: |
+          echo "Graficas disponibles:"
+          find src/carga_datos/datos/graficas \
+            -type f -name "*.png" -print
+
+      # 9. Publicar artefactos
+      - name: Publicar resultados como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: resultados-actividad3-kmeans
+          path: |
+            src/carga_datos/reportes/reporte_kmeans.txt
+            src/carga_datos/datos/graficas/*.png
+          if-no-files-found: error
+          retention-days: 30
+
+      # 10. Guardar resultados en GitHub
+      - name: Guardar resultados de Actividad 3
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add \
-            src/carga_datos/datos \
-            src/carga_datos/datos/graficas \
-            src/carga_datos/reportes \
-            src/carga_datos/EA3_Modelo_No_Supervisor.ipynb
+          # Guardar solamente archivos de Actividad 3
+          git add -f \
+            src/carga_datos/reportes/reporte_kmeans.txt
+
+          git add -A -- \
+            src/carga_datos/EA3_Modelo_No_Supervisor.ipynb \
+            src/carga_datos/datos/graficas
+
+          echo "Archivos preparados:"
+          git diff --cached --name-only
 
           if git diff --cached --quiet; then
-            echo "No se generaron cambios."
+            echo "No hay cambios para guardar"
             exit 0
           fi
 
-          git commit -m "chore: actualizar resultados de actividad [skip ci]"
+          git commit -m \
+            "chore: actualizar resultados actividad 3 [skip ci]"
 
-          git stash push --include-untracked -m "Cambios temporales" || true
+          # Apartar cambios temporales no incluidos
+          git stash push --include-untracked \
+            -m "Cambios temporales actividad 3"
+
+          # Sincronizar con main antes del push
           git fetch origin main
           git rebase origin/main
+
+          # Publicar resultados
           git push origin HEAD:main
 
-          echo "Resultados publicados correctamente en main"
+          echo "Resultados de Actividad 3 publicados"

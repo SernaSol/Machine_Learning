@@ -1,0 +1,76 @@
+================================================================================
+          RESUMEN AUTOMÁTICO DE EJECUCIÓN - EXPERIMENTO K-MEANS
+================================================================================
+Fecha y Hora de Ejecución: 2026-11-09 00:07:09
+
+1. PREGUNTA DE NEGOCIO Y OBJETIVO
+--------------------------------------------------------------------------------
+Pregunta: ¿Cuáles son los patrones biológicos y de comportamiento subyacentes
+          en la cartera de asegurados y cómo se traducen en niveles de gasto médico
+          para diseñar coberturas personalizadas y programas preventivos?
+Beneficiarios: Gerencia de Salud Preventiva, Suscripción (Underwriting) y Producto.
+Decisión: Focalización de programas preventivos y estratificación tarifaria.
+
+2. IDENTIFICACIÓN Y DATOS DEL DATASET
+--------------------------------------------------------------------------------
+Identificador Hugging Face: shijiabraham/insurance-data
+Enlace: https://huggingface.co/datasets/shijiabraham/insurance-data
+Split Utilizado: train
+Registros Iniciales: 1338 filas | 7 columnas
+Registros Depurados: 1337 filas | 7 columnas
+Duplicados Eliminados: 1
+Valores Faltantes Detectados: 0 nulos
+
+3. DESCRIPCIÓN DEL PREPROCESAMIENTO APLICADO
+--------------------------------------------------------------------------------
+- Depuración: Eliminación de filas idénticas duplicadas (1337 registros finales).
+- Prevención de Data Leakage: Exclusión de la variable 'charges' ($ USD) de la
+  matriz de entrenamiento.
+- Codificación Categórica:
+    * 'sex': Encoding binario (male=1, female=0)
+    * 'smoker': Encoding binario (yes=1, no=0)
+    * 'region': One-Hot Encoding con drop_first=True
+- Escalado de Características: StandardScaler (Media = 0, Desv. Est. = 1)
+
+4. CONFIGURACIÓN DEL EXPERIMENTO Y PARÁMETROS DEL MODELO
+--------------------------------------------------------------------------------
+Tipo de Aprendizaje: No Supervisado
+Algoritmo: K-Means Clustering
+Número de Clústeres (K): 3
+Semilla Aleatoria (random_state): 42
+Inicialización de Centroides (n_init): 10 (k-means++)
+Variables Predictoras Entrenadas (8): ['age', 'bmi', 'children', 'sex_male', 'smoker_yes', 'region_northwest', 'region_southeast', 'region_southwest']
+
+5. MÉTRICAS CALCULADAS DE CALIDAD DEL AGRUPAMIENTO
+--------------------------------------------------------------------------------
+- Inercia / WCSS (Suma Cuadrados Intracluster): 
+7450.0145
+- Coeficiente de Silueta (Silhouette Score):   
+0.2304
+- Índice de Calinski-Harabasz:                  
+290.6132
+- Índice de Davies-Bouldin:                    
+1.7607
+
+6. CARACTERIZACIÓN FINANCIERA Y BIOLÓGICA POR CLÚSTER
+--------------------------------------------------------------------------------
+               age        bmi  children       charges
+Cluster                                              
+0        39.455385  30.596615  1.141538  12346.937377
+1        38.939560  33.355989  1.049451  14735.411438
+2        39.263889  29.184498  1.098765  12928.612680
+
+smoker          no        yes
+Cluster                      
+0        82.153846  17.846154
+1        75.000000  25.000000
+2        80.709877  19.290123
+
+Cluster
+0    325
+1    364
+2    648
+
+================================================================================
+Fin del Reporte Automático - Generado por clases_po/kmeans.py
+================================================================================

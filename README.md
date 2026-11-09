@@ -7,7 +7,7 @@ Juan Esteban Ospina Lopez
 
 Actividad 3 Modelo No supervisado K-Means
 
-0. Pregunta de negocio
+# 0. Pregunta de negocio
 
 ¿Cuáles son los arquetipos naturales de asegurados presentes en la cartera en función de sus características demográficas, biológicas y de estilo de vida (edad, IMC, número de dependientes y hábito de fumar), y cómo varían sus costos médicos cobrados para diseñar programas de salud preventiva focalizados y optimizar el diseño de pólizas?
 
@@ -15,12 +15,12 @@ El modelo desarrollado pertenece al Aprendizaje No Supervisado, utilizando el al
 
 El problema no busca predecir una categoría predefinida (como "Cliente de alto riesgo" vs. "Cliente de bajo riesgo"), ni calcular un valor futuro a partir de una respuesta conocida. El objetivo es descubrir la estructura latente y natural de la población de asegurados sin supervisión o guía previa.El algoritmo evalúa la proximidad geométrica de las observaciones en el espacio de características estandarizado (X). Esto permite identificar automáticamente la formación de clusters basados en la interacción conjunta de variables demográficas (age, children), médicas/estilo de vida (bmi, smoker) y financieras (charges).
 
-# Variables a trabajar para el modelo no Supervisado
+## Variables a trabajar para el modelo no Supervisado
 
 Variables numericas : age, bmi, children, charges
 Variables categoricas = sex, smoker, region
 
-# ¿Quién se beneficia?
+## ¿Quién se beneficia?
 
 Los actores mas beneficiados son:
 
@@ -28,7 +28,7 @@ Los actores mas beneficiados son:
 -El Equipo de Suscripción 
 -La Dirección de Producto de la compañía aseguradora.
 
-# Justificacion de la pregunta planteada
+## Justificacion de la pregunta planteada
 
 El conjunto de datos permite responder la pregunta planteada porque reúne en una misma fuente:
 
